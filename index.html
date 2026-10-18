@@ -1,0 +1,2067 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Un Paraíso Para Ti 💖 Feliz Día de las Madres</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Quicksand', sans-serif;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100dvh;
+      overflow: hidden;
+      font-family: var(--font-sans);
+      background: #1a1025;
+      touch-action: none;
+    }
+    .font-serif-title {
+      font-family: var(--font-serif);
+    }
+    /* Glassmorphism panels */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 10px 30px -5px rgba(31, 18, 53, 0.18);
+    }
+    .glass-dark {
+      background: rgba(24, 18, 43, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+      color: #fff;
+    }
+    /* Active tool button animation */
+    .tool-btn {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .tool-btn:active {
+      transform: scale(0.92);
+    }
+    .tool-btn.active {
+      transform: translateY(-6px) scale(1.06);
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      color: white;
+      box-shadow: 0 10px 20px -3px rgba(244, 63, 94, 0.55);
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+    /* Letter Modal Parchment style */
+    .letter-paper {
+      background: radial-gradient(circle at top right, #fff9fb, #fff0f5 60%, #fde6ef 100%);
+      box-shadow: 0 25px 60px -15px rgba(80, 15, 45, 0.45), inset 0 0 40px rgba(244, 114, 182, 0.15);
+      border: 2px solid rgba(244, 114, 182, 0.4);
+    }
+    .letter-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .letter-scroll::-webkit-scrollbar-thumb {
+      background: rgba(236, 72, 153, 0.35);
+      border-radius: 9999px;
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6), 0 8px 20px rgba(244, 63, 94, 0.35); }
+      50% { box-shadow: 0 0 0 10px rgba(244, 63, 94, 0), 0 8px 25px rgba(244, 63, 94, 0.6); }
+    }
+    .pulse-letter-btn {
+      animation: pulseGlow 2.4s infinite;
+    }
+    .allow-select {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  </style>
+</head>
+<body class="relative select-none overflow-hidden">
+
+  <!-- Interactive World Canvas -->
+  <canvas id="worldCanvas" class="block w-full h-full cursor-pointer"></canvas>
+
+  <!-- TOP NAVIGATION & CONTROLS OVERLAY -->
+  <header class="fixed top-0 left-0 right-0 z-20 p-2.5 sm:p-4 pointer-events-none flex flex-wrap items-center justify-between gap-2">
+    
+    <!-- Left: Paradise Title & Happiness Meter -->
+    <div class="glass-panel pointer-events-auto rounded-2xl px-3.5 py-2 flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center text-white text-lg shadow-md">
+        🌸
+      </div>
+      <div>
+        <h1 class="font-serif-title font-bold text-slate-800 text-base sm:text-lg leading-tight">
+          Un Paraíso Para Ti
+        </h1>
+        <div class="flex items-center gap-1.5 text-xs text-rose-600 font-semibold">
+          <span>💖 Amor en el paraíso:</span>
+          <span id="loveScoreEl" class="font-bold bg-rose-100 px-2 py-0.5 rounded-full text-rose-700">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center/Right: Prominent Letter Button & Environment Controls -->
+    <div class="flex items-center gap-2 pointer-events-auto ml-auto">
+      
+      <!-- Open Special Letter Button -->
+      <button id="openLetterBtn" onclick="openLetterModal()" class="pulse-letter-btn bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-bold px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl flex items-center gap-2 text-xs sm:text-sm shadow-lg hover:brightness-110 active:scale-95 transition">
+        <span class="text-base sm:text-lg">💌</span>
+        <span>Carta Especial</span>
+      </button>
+
+      <!-- Call All Animals Button -->
+      <button onclick="callAllAnimals()" title="Llamar a todos los animalitos" class="glass-panel hover:bg-white text-slate-700 font-semibold px-3 py-2 sm:py-2.5 rounded-2xl flex items-center gap-1.5 text-xs sm:text-sm active:scale-95 transition">
+        <span class="text-base">🔔</span>
+        <span class="hidden md:inline">Reunir</span>
+      </button>
+
+      <!-- Weather / Ambiance Toggle Menu Button -->
+      <div class="relative">
+        <button id="weatherMenuBtn" onclick="toggleWeatherMenu()" class="glass-panel hover:bg-white text-slate-700 font-semibold px-3 py-2 sm:py-2.5 rounded-2xl flex items-center gap-1.5 text-xs sm:text-sm active:scale-95 transition">
+          <span id="currentWeatherIcon" class="text-base">☀️</span>
+          <span class="hidden sm:inline">Ambiente</span>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div id="weatherDropdown" class="hidden absolute right-0 mt-2 w-56 glass-panel rounded-2xl p-2 shadow-2xl border border-white/80 z-30 flex flex-col gap-1">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2.5 py-1">Hora del Día</div>
+          <button onclick="setTimeOfDay('day')" class="weather-opt flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-pink-50/90 transition">
+            <span class="flex items-center gap-2">☀️ Día Radiante</span>
+            <span id="check-day" class="text-pink-500">●</span>
+          </button>
+          <button onclick="setTimeOfDay('sunset')" class="weather-opt flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-pink-50/90 transition">
+            <span class="flex items-center gap-2">🌅 Atardecer Dorado</span>
+            <span id="check-sunset" class="text-pink-500 hidden">●</span>
+          </button>
+          <button onclick="setTimeOfDay('night')" class="weather-opt flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-pink-50/90 transition">
+            <span class="flex items-center gap-2">🌙 Noche de Luciérnagas</span>
+            <span id="check-night" class="text-pink-500 hidden">●</span>
+          </button>
+          
+          <div class="h-px bg-slate-200/70 my-1"></div>
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2.5 py-1">Efectos Mágicos</div>
+          
+          <button onclick="toggleSakuraRain()" class="flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-pink-50/90 transition">
+            <span class="flex items-center gap-2">🌸 Lluvia de Pétalos</span>
+            <span id="toggle-sakura" class="text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 font-bold">ON</span>
+          </button>
+          <button onclick="toggleRainbow()" class="flex items-center justify-between w-full px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-pink-50/90 transition">
+            <span class="flex items-center gap-2">🌈 Arcoíris Mágico</span>
+            <span id="toggle-rainbow" class="text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 font-bold">ON</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Music & Sound Toggle -->
+      <button id="audioBtn" onclick="toggleAudio()" title="Música y Sonidos" class="glass-panel hover:bg-white text-slate-700 font-semibold p-2 sm:p-2.5 rounded-2xl flex items-center justify-center text-base active:scale-95 transition">
+        <span id="audioIcon">🎵</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- FLOATING HELPER TOAST / ACTIVE MODE BANNER -->
+  <div class="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none w-[92%] max-w-md text-center">
+    <div id="statusToast" class="inline-block glass-panel px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300">
+      ✨ Toca a los animalitos para darles amor o elige una actividad abajo
+    </div>
+  </div>
+
+  <!-- ANIMAL QUICK-BAR (Tap to focus/pet specific animals) -->
+  <div class="fixed left-2.5 bottom-24 sm:bottom-28 z-10 flex flex-col gap-1.5 pointer-events-auto">
+    <button onclick="spotlightAnimal('Zeus')" class="glass-panel px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-white flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+      <span>🐱</span> <span class="hidden sm:inline">Zeus</span>
+    </button>
+    <button onclick="spotlightAnimal('Luna')" class="glass-panel px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-white flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+      <span>🐈</span> <span class="hidden sm:inline">Luna</span>
+    </button>
+    <button onclick="spotlightAnimal('Max')" class="glass-panel px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-white flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+      <span>🐶</span> <span class="hidden sm:inline">Max</span>
+    </button>
+    <button onclick="spotlightAnimal('Canela')" class="glass-panel px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-white flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+      <span>🐕</span> <span class="hidden sm:inline">Canela</span>
+    </button>
+    <button onclick="spotlightAnimal('Copito')" class="glass-panel px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:bg-white flex items-center gap-1.5 shadow-sm active:scale-95 transition">
+      <span>🐰</span> <span class="hidden sm:inline">Copito</span>
+    </button>
+  </div>
+
+  <!-- BOTTOM INTERACTIVE TOOLBAR -->
+  <nav class="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 w-[96%] max-w-xl pointer-events-auto">
+    <div class="glass-panel rounded-3xl p-1.5 sm:p-2 grid grid-cols-5 gap-1 sm:gap-2">
+      
+      <button id="tool-pet" onclick="selectTool('pet')" class="tool-btn active flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-700 font-bold border border-transparent">
+        <span class="text-xl sm:text-2xl mb-0.5">🖐️</span>
+        <span class="text-[10px] sm:text-xs leading-tight">Acariciar</span>
+      </button>
+
+      <button id="tool-play" onclick="selectTool('play')" class="tool-btn flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-700 font-bold border border-transparent hover:bg-white/50">
+        <span class="text-xl sm:text-2xl mb-0.5">🎾</span>
+        <span class="text-[10px] sm:text-xs leading-tight">Jugar</span>
+      </button>
+
+      <button id="tool-feed" onclick="selectTool('feed')" class="tool-btn flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-700 font-bold border border-transparent hover:bg-white/50">
+        <span class="text-xl sm:text-2xl mb-0.5">🍓</span>
+        <span class="text-[10px] sm:text-xs leading-tight">Alimentar</span>
+      </button>
+
+      <button id="tool-flower" onclick="selectTool('flower')" class="tool-btn flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-700 font-bold border border-transparent hover:bg-white/50">
+        <span class="text-xl sm:text-2xl mb-0.5">🌷</span>
+        <span class="text-[10px] sm:text-xs leading-tight">Flores</span>
+      </button>
+
+      <button id="tool-magic" onclick="selectTool('magic')" class="tool-btn flex flex-col items-center justify-center py-2 px-1 rounded-2xl text-slate-700 font-bold border border-transparent hover:bg-white/50">
+        <span class="text-xl sm:text-2xl mb-0.5">🪄</span>
+        <span class="text-[10px] sm:text-xs leading-tight">Deseos</span>
+      </button>
+
+    </div>
+  </nav>
+
+  <!-- SPECIAL LETTER MODAL -->
+  <div id="letterModal" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/60 backdrop-blur-md transition-opacity duration-300">
+    <div class="letter-paper relative w-full max-w-2xl max-h-[90dvh] rounded-3xl p-5 sm:p-9 flex flex-col overflow-hidden animate-float">
+      
+      <!-- Decorative Corner Blossoms -->
+      <div class="absolute -top-3 -left-3 text-4xl sm:text-5xl opacity-80 pointer-events-none">🌸</div>
+      <div class="absolute -top-3 -right-3 text-4xl sm:text-5xl opacity-80 pointer-events-none">🌺</div>
+      <div class="absolute -bottom-3 -left-3 text-3xl sm:text-4xl opacity-75 pointer-events-none">🌷</div>
+      <div class="absolute -bottom-3 -right-3 text-3xl sm:text-4xl opacity-75 pointer-events-none">✨</div>
+
+      <!-- Close Modal Button -->
+      <button onclick="closeLetterModal()" class="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold flex items-center justify-center text-lg transition z-10">
+        ✕
+      </button>
+
+      <!-- Header -->
+      <div class="text-center border-b border-rose-200/80 pb-3 mb-4">
+        <span class="inline-block px-3 py-0.5 rounded-full bg-rose-100 text-rose-600 text-xs font-bold tracking-wider uppercase mb-1">
+          💖 Un Regalo Hecho Con El Corazón 💖
+        </span>
+        <h2 id="letterTitleDisplay" class="font-serif-title text-2xl sm:text-4xl font-bold text-rose-900">
+          ¡Feliz Día de las Madres!
+        </h2>
+      </div>
+
+      <!-- Scrollable Letter Content -->
+      <div id="letterBodyContainer" class="letter-scroll overflow-y-auto pr-1 sm:pr-2 space-y-4 text-slate-700 text-sm sm:text-base leading-relaxed allow-select">
+        <p id="letterTextDisplay" class="whitespace-pre-line font-medium text-slate-800 leading-relaxed"></p>
+
+        <div class="pt-3 border-t border-rose-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="italic text-rose-700 font-serif-title text-lg sm:text-xl font-semibold" id="letterSignatureDisplay">
+            Con muchísimo cariño y admiración, para ti 🌸
+          </div>
+          <button onclick="toggleEditLetter()" class="self-start sm:self-auto text-xs font-bold text-rose-500 hover:text-rose-700 underline flex items-center gap-1">
+            ✏️ Personalizar mensaje o firma
+          </button>
+        </div>
+
+        <!-- Optional Customization Editor (Hidden by default) -->
+        <div id="letterEditorBox" class="hidden bg-white/90 rounded-2xl p-3.5 border border-rose-200 space-y-2.5 mt-3">
+          <div class="text-xs font-bold text-rose-700">✏️ Personaliza la carta (se guarda automáticamente):</div>
+          <input id="editTitleInput" type="text" placeholder="Título de la carta" class="w-full px-3 py-1.5 rounded-xl border border-rose-200 text-sm focus:outline-none focus:border-rose-400" />
+          <textarea id="editBodyInput" rows="5" class="w-full px-3 py-2 rounded-xl border border-rose-200 text-xs sm:text-sm focus:outline-none focus:border-rose-400"></textarea>
+          <input id="editSignInput" type="text" placeholder="Tu firma o nombre" class="w-full px-3 py-1.5 rounded-xl border border-rose-200 text-sm focus:outline-none focus:border-rose-400" />
+          <div class="flex justify-end gap-2">
+            <button onclick="resetDefaultLetter()" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200">Restaurar original</button>
+            <button onclick="saveCustomLetter()" class="px-4 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-bold hover:bg-rose-600">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Action Buttons -->
+      <div class="mt-5 pt-3 border-t border-rose-200/80 flex flex-wrap items-center justify-between gap-2">
+        <button onclick="celebrateFromLetter()" class="flex-1 sm:flex-initial bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-4 py-2.5 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-1.5 transition active:scale-95">
+          <span>✨</span> <span>Lanzar Lluvia de Corazones</span>
+        </button>
+        <button onclick="closeLetterModal()" class="flex-1 sm:flex-initial bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold px-6 py-2.5 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition active:scale-95">
+          <span>🦋</span> <span>Entrar a tu Paraíso</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /********************************************************************
+     * 1. LETTER CONTENT & STORAGE SYSTEM
+     ********************************************************************/
+    const DEFAULT_LETTER = {
+      title: "¡Feliz Día de las Madres! 🌸",
+      body: `Sé que no eres mi madre, pero en este día tan especial no podía quedarme sin felicitarte y recordarte lo valiosa que eres para mí.
+
+Ser una figura especial no se trata únicamente de llevar la misma sangre; se trata de la calidez del corazón, de la ternura con la que escuchas, de la fuerza que transmites cada día y de esa luz tan bonita que dejas en la vida de quienes tenemos la dicha de conocerte.
+
+Por tu cariño, tu paciencia, tus consejos y tu forma tan noble de cuidar e inspirar a los demás, hoy mereces que te celebren en grande.
+
+Quise crearte este pequeño paraíso interactivo solo para ti: un rincón lleno de flores que nunca se marchitan, animalitos cariñosos como Zeus, Luna, Max y Canela listos para jugar contigo, estrellas, música suave y mucha paz. Cada vez que toques una flor, acaricies un gatito o pidas un deseo al cielo, recuerda cuánto se te quiere y se te admira.
+
+¡Espero que este detalle te saque una sonrisa tan hermosa como tu corazón!`,
+      signature: "Con muchísimo cariño y admiración, hoy y siempre 💖"
+    };
+
+    let currentLetter = { ...DEFAULT_LETTER };
+
+    function loadLetterContent() {
+      try {
+        const saved = localStorage.getItem('paraiso_mama_letter_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.title && parsed.body) currentLetter = parsed;
+        }
+      } catch (e) {
+        // Fallback if storage restricted
+      }
+      renderLetterDOM();
+    }
+
+    function renderLetterDOM() {
+      document.getElementById('letterTitleDisplay').textContent = currentLetter.title;
+      document.getElementById('letterTextDisplay').textContent = currentLetter.body;
+      document.getElementById('letterSignatureDisplay').textContent = currentLetter.signature;
+      document.getElementById('editTitleInput').value = currentLetter.title;
+      document.getElementById('editBodyInput').value = currentLetter.body;
+      document.getElementById('editSignInput').value = currentLetter.signature;
+    }
+
+    function toggleEditLetter() {
+      const box = document.getElementById('letterEditorBox');
+      box.classList.toggle('hidden');
+    }
+
+    function saveCustomLetter() {
+      const t = document.getElementById('editTitleInput').value.trim();
+      const b = document.getElementById('editBodyInput').value.trim();
+      const s = document.getElementById('editSignInput').value.trim();
+      if (t) currentLetter.title = t;
+      if (b) currentLetter.body = b;
+      if (s) currentLetter.signature = s;
+      try {
+        localStorage.setItem('paraiso_mama_letter_v1', JSON.stringify(currentLetter));
+      } catch (e) {}
+      renderLetterDOM();
+      document.getElementById('letterEditorBox').classList.add('hidden');
+      showToast("💌 ¡Carta personalizada guardada con éxito!");
+      SoundFX.playChime();
+    }
+
+    function resetDefaultLetter() {
+      currentLetter = { ...DEFAULT_LETTER };
+      try {
+        localStorage.removeItem('paraiso_mama_letter_v1');
+      } catch (e) {}
+      renderLetterDOM();
+      document.getElementById('letterEditorBox').classList.add('hidden');
+      showToast("🌸 Carta restaurada al mensaje original");
+    }
+
+    function openLetterModal() {
+      SoundFX.init();
+      SoundFX.playChime();
+      const modal = document.getElementById('letterModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeLetterModal() {
+      SoundFX.init();
+      const modal = document.getElementById('letterModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function celebrateFromLetter() {
+      SoundFX.init();
+      SoundFX.playHarpGlissando();
+      // Spawn hearts & fireworks in background
+      for (let i = 0; i < 28; i++) {
+        spawnHeartParticle(
+          window.innerWidth * (0.15 + Math.random() * 0.7),
+          window.innerHeight * (0.2 + Math.random() * 0.6),
+          true
+        );
+      }
+      launchFirework(window.innerWidth * 0.3, window.innerHeight * 0.28);
+      launchFirework(window.innerWidth * 0.7, window.innerHeight * 0.25);
+      addLovePoints(15);
+    }
+
+    /********************************************************************
+     * 2. WEB AUDIO API SYNTHESIZER (NO EXTERNAL FILES REQUIRED)
+     ********************************************************************/
+    const SoundFX = {
+      ctx: null,
+      enabled: true,
+      musicInterval: null,
+      noteIndex: 0,
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+            this.startMusicLoop();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      playTone(freq, type = 'sine', duration = 0.4, vol = 0.08, slideTo = null) {
+        if (!this.enabled || !this.ctx) return;
+        try {
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          if (slideTo) {
+            osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+          }
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(vol, now + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (e) {}
+      },
+
+      playChime() {
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, idx) => {
+          setTimeout(() => this.playTone(n, 'sine', 0.55, 0.06), idx * 70);
+        });
+      },
+
+      playHarpGlissando() {
+        const scale = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.5];
+        scale.forEach((n, idx) => {
+          setTimeout(() => this.playTone(n, 'triangle', 0.65, 0.055), idx * 55);
+        });
+      },
+
+      playMeow() {
+        this.playTone(520, 'triangle', 0.35, 0.07, 760);
+        setTimeout(() => this.playTone(740, 'sine', 0.3, 0.06, 480), 120);
+      },
+
+      playBark() {
+        this.playTone(260, 'sawtooth', 0.14, 0.055, 390);
+        setTimeout(() => this.playTone(290, 'sawtooth', 0.16, 0.055, 220), 140);
+      },
+
+      playChirp() {
+        this.playTone(1400, 'sine', 0.12, 0.045, 2100);
+        setTimeout(() => this.playTone(1800, 'sine', 0.15, 0.045, 2400), 110);
+      },
+
+      playSplash() {
+        this.playTone(340, 'sine', 0.25, 0.05, 160);
+        setTimeout(() => this.playTone(520, 'sine', 0.2, 0.04, 680), 80);
+      },
+
+      playFirework() {
+        this.playTone(280, 'sine', 0.4, 0.04, 880);
+        setTimeout(() => this.playChime(), 360);
+      },
+
+      startMusicLoop() {
+        if (this.musicInterval) return;
+        // Gentle pentatonic music-box notes
+        const melody = [
+          523.25, 659.25, 783.99, 1046.5, 880.0, 783.99, 659.25, 587.33,
+          523.25, 587.33, 659.25, 783.99, 659.25, 523.25, 440.0, 523.25
+        ];
+        this.musicInterval = setInterval(() => {
+          if (!this.enabled || !this.ctx || document.hidden) return;
+          const freq = melody[this.noteIndex % melody.length];
+          this.playTone(freq, 'sine', 1.4, 0.025);
+          if (this.noteIndex % 4 === 0) {
+            this.playTone(freq * 0.5, 'triangle', 2.0, 0.02);
+          }
+          this.noteIndex++;
+        }, 720);
+      }
+    };
+
+    function toggleAudio() {
+      SoundFX.init();
+      SoundFX.enabled = !SoundFX.enabled;
+      document.getElementById('audioIcon').textContent = SoundFX.enabled ? '🎵' : '🔇';
+      showToast(SoundFX.enabled ? '🎵 Música y sonidos activados' : '🔇 Sonidos silenciados');
+    }
+
+    /********************************************************************
+     * 3. WORLD STATE & CONFIGURATION
+     ********************************************************************/
+    const canvas = document.getElementById('worldCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let W = window.innerWidth;
+    let H = window.innerHeight;
+    let horizonY = H * 0.52;
+    let pondCenter = { x: W * 0.78, y: H * 0.77, rx: 140, ry: 55 };
+    let altarPos = { x: W * 0.5, y: H * 0.54 };
+
+    let currentTool = 'pet'; // 'pet', 'play', 'feed', 'flower', 'magic'
+    let timeOfDay = 'day';   // 'day', 'sunset', 'night'
+    let sakuraRain = true;
+    let showRainbow = true;
+    let lovePoints = 100;
+
+    // Collections
+    const clouds = [];
+    const stars = [];
+    const trees = [];
+    const flowers = [];
+    const animals = [];
+    const birds = [];
+    const pondCreatures = [];
+    const toys = [];
+    const treats = [];
+    const particles = [];
+    const speechBubbles = [];
+    const fireworks = [];
+    const lanterns = [];
+    const ripples = [];
+    const butterflies = [];
+
+    const SWEET_QUOTES = [
+      "¡Te queremos muchísimo! 💖",
+      "¡Eres una persona maravillosa! 🌸",
+      "¡Gracias por tu ternura y luz! ✨",
+      "Prrr ♥ Zeus dice que eres especial",
+      "¡Guau! ¡Eres la mejor! 🐾",
+      "¡Tu sonrisa ilumina este paraíso! ☀️",
+      "¡Feliz Día de las Madres! 🌷",
+      "¡Tienes un corazón de oro! 💛",
+      "¡Qué bonito es tenerte en nuestras vidas! 🦋"
+    ];
+
+    const FLOWER_COMPLIMENTS = [
+      "✨ Única",
+      "💖 Corazón Noble",
+      "🌸 Dulzura",
+      "🌟 Luz Pura",
+      "🌷 Valentía",
+      "🦋 Alegría",
+      "💝 Inolvidable",
+      "☀️ Calidez"
+    ];
+
+    function addLovePoints(amount) {
+      lovePoints += amount;
+      const el = document.getElementById('loveScoreEl');
+      el.textContent = lovePoints + '%';
+    }
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      const el = document.getElementById('statusToast');
+      el.textContent = msg;
+      el.classList.add('scale-105');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        el.classList.remove('scale-105');
+      }, 300);
+    }
+
+    /********************************************************************
+     * 4. UI CONTROLS (TOOLS & WEATHER)
+     ********************************************************************/
+    function selectTool(tool) {
+      SoundFX.init();
+      currentTool = tool;
+      document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById('tool-' + tool);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const messages = {
+        pet: "🖐️ Modo Acariciar: Toca o desliza sobre Zeus, Luna, Max o Canela para darles amor",
+        play: "🎾 Modo Jugar: Toca cualquier lugar para lanzar pelotas y estambre a los animalitos",
+        feed: "🍓 Modo Alimentar: Toca el pasto o el estanque para darles premios y semillas",
+        flower: "🌷 Modo Jardín: Toca el césped para sembrar flores mágicas con cumplidos",
+        magic: "🪄 Modo Deseos: Toca el cielo para fuegos artificiales o el suelo para linternas"
+      };
+      showToast(messages[tool]);
+    }
+
+    function toggleWeatherMenu() {
+      SoundFX.init();
+      const menu = document.getElementById('weatherDropdown');
+      menu.classList.toggle('hidden');
+    }
+
+    function setTimeOfDay(mode) {
+      SoundFX.init();
+      SoundFX.playChime();
+      timeOfDay = mode;
+      ['day', 'sunset', 'night'].forEach(m => {
+        document.getElementById('check-' + m).classList.toggle('hidden', m !== mode);
+      });
+      const icons = { day: '☀️', sunset: '🌅', night: '🌙' };
+      document.getElementById('currentWeatherIcon').textContent = icons[mode];
+      document.getElementById('weatherDropdown').classList.add('hidden');
+      const labels = {
+        day: "☀️ Día Radiante activado",
+        sunset: "🌅 Atardecer Dorado activado",
+        night: "🌙 Noche de Luciérnagas y Estrellas activada"
+      };
+      showToast(labels[mode]);
+    }
+
+    function toggleSakuraRain() {
+      SoundFX.init();
+      sakuraRain = !sakuraRain;
+      const badge = document.getElementById('toggle-sakura');
+      badge.textContent = sakuraRain ? 'ON' : 'OFF';
+      badge.className = sakuraRain
+        ? 'text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 font-bold'
+        : 'text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold';
+    }
+
+    function toggleRainbow() {
+      SoundFX.init();
+      showRainbow = !showRainbow;
+      const badge = document.getElementById('toggle-rainbow');
+      badge.textContent = showRainbow ? 'ON' : 'OFF';
+      badge.className = showRainbow
+        ? 'text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-600 font-bold'
+        : 'text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold';
+    }
+
+    /********************************************************************
+     * 5. INITIALIZE WORLD ENTITIES
+     ********************************************************************/
+    function resizeWorld() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      horizonY = H * 0.50;
+      pondCenter = {
+        x: W * 0.76,
+        y: H * 0.76,
+        rx: Math.max(95, Math.min(200, W * 0.21)),
+        ry: Math.max(42, Math.min(78, H * 0.085))
+      };
+      altarPos = { x: W * 0.5, y: horizonY + (H - horizonY) * 0.16 };
+
+      // Reposition trees proportionally
+      trees.length = 0;
+      trees.push({ x: W * 0.14, y: horizonY + 25, scale: W < 640 ? 0.78 : 1.05, flip: 1 });
+      trees.push({ x: W * 0.86, y: horizonY + 35, scale: W < 640 ? 0.72 : 0.95, flip: -1 });
+
+      // Keep animals inside bounds
+      animals.forEach(a => {
+        a.x = Math.max(50, Math.min(W - 50, a.x));
+        a.y = Math.max(horizonY + 30, Math.min(H - 105, a.y));
+      });
+    }
+
+    function initWorld() {
+      resizeWorld();
+
+      // Clouds
+      for (let i = 0; i < 6; i++) {
+        clouds.push({
+          x: Math.random() * W,
+          y: H * (0.08 + Math.random() * 0.25),
+          scale: 0.6 + Math.random() * 0.6,
+          speed: 0.15 + Math.random() * 0.2
+        });
+      }
+
+      // Stars
+      for (let i = 0; i < 65; i++) {
+        stars.push({
+          x: Math.random(),
+          y: Math.random() * 0.48,
+          r: 0.8 + Math.random() * 1.8,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      // Initial Flowers
+      const initialFlowerCount = W < 640 ? 12 : 22;
+      for (let i = 0; i < initialFlowerCount; i++) {
+        let fx = 40 + Math.random() * (W - 80);
+        let fy = horizonY + 25 + Math.random() * (H - horizonY - 130);
+        if (!isInsidePond(fx, fy)) {
+          flowers.push(createFlower(fx, fy, false));
+        }
+      }
+
+      // Create Expressive Animals
+      animals.push(
+        {
+          name: 'Zeus',
+          species: 'cat',
+          coat: 'tuxedo',
+          color: '#2d3142',
+          belly: '#ffffff',
+          x: W * 0.34,
+          y: horizonY + (H - horizonY) * 0.44,
+          vx: 0,
+          vy: 0,
+          targetX: W * 0.34,
+          targetY: horizonY + (H - horizonY) * 0.44,
+          state: 'idle',
+          stateTimer: 120,
+          facing: 1,
+          bounce: 0,
+          happyTimer: 0
+        },
+        {
+          name: 'Luna',
+          species: 'cat',
+          coat: 'white',
+          color: '#fff5f8',
+          belly: '#fde2e8',
+          x: W * 0.46,
+          y: horizonY + (H - horizonY) * 0.52,
+          vx: 0,
+          vy: 0,
+          targetX: W * 0.46,
+          targetY: horizonY + (H - horizonY) * 0.52,
+          state: 'idle',
+          stateTimer: 90,
+          facing: -1,
+          bounce: 0,
+          happyTimer: 0
+        },
+        {
+          name: 'Max',
+          species: 'dog',
+          coat: 'golden',
+          color: '#eab354',
+          belly: '#fae3b4',
+          x: W * 0.23,
+          y: horizonY + (H - horizonY) * 0.56,
+          vx: 0,
+          vy: 0,
+          targetX: W * 0.23,
+          targetY: horizonY + (H - horizonY) * 0.56,
+          state: 'idle',
+          stateTimer: 100,
+          facing: 1,
+          bounce: 0,
+          happyTimer: 0
+        },
+        {
+          name: 'Canela',
+          species: 'dog',
+          coat: 'cinnamon',
+          color: '#b86b43',
+          belly: '#f4d3b8',
+          x: W * 0.60,
+          y: horizonY + (H - horizonY) * 0.48,
+          vx: 0,
+          vy: 0,
+          targetX: W * 0.60,
+          targetY: horizonY + (H - horizonY) * 0.48,
+          state: 'idle',
+          stateTimer: 140,
+          facing: -1,
+          bounce: 0,
+          happyTimer: 0
+        },
+        {
+          name: 'Copito',
+          species: 'bunny',
+          coat: 'white',
+          color: '#ffffff',
+          belly: '#fbcfe8',
+          x: W * 0.18,
+          y: horizonY + (H - horizonY) * 0.36,
+          vx: 0,
+          vy: 0,
+          targetX: W * 0.18,
+          targetY: horizonY + (H - horizonY) * 0.36,
+          state: 'idle',
+          stateTimer: 80,
+          facing: 1,
+          bounce: 0,
+          happyTimer: 0
+        }
+      );
+
+      // Songbirds
+      const birdColors = ['#38bdf8', '#fb7185', '#facc15', '#a78bfa'];
+      for (let i = 0; i < 4; i++) {
+        birds.push({
+          x: W * (0.2 + i * 0.18),
+          y: H * (0.18 + Math.random() * 0.2),
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 0.8,
+          color: birdColors[i % birdColors.length],
+          state: 'fly',
+          timer: 100 + Math.random() * 120,
+          wingPhase: Math.random() * 10
+        });
+      }
+
+      // Pond Ducks & Koi Fish
+      pondCreatures.push(
+        { type: 'duck', name: 'Sol', angle: 0.4, dist: 0.45, speed: 0.008, color: '#fde047' },
+        { type: 'duck', name: 'Pato', angle: 3.5, dist: 0.55, speed: -0.007, color: '#ffffff' },
+        { type: 'koi', angle: 1.8, dist: 0.65, speed: 0.015, color: '#fb7185' },
+        { type: 'koi', angle: 4.9, dist: 0.35, speed: 0.018, color: '#fb923c' }
+      );
+
+      // Butterflies
+      for (let i = 0; i < 6; i++) {
+        butterflies.push({
+          x: Math.random() * W,
+          y: horizonY + Math.random() * (H - horizonY - 100),
+          angle: Math.random() * Math.PI * 2,
+          color: i % 2 === 0 ? '#f472b6' : '#38bdf8'
+        });
+      }
+    }
+
+    function isInsidePond(x, y) {
+      const dx = (x - pondCenter.x) / (pondCenter.rx * 1.1);
+      const dy = (y - pondCenter.y) / (pondCenter.ry * 1.1);
+      return dx * dx + dy * dy <= 1;
+    }
+
+    function createFlower(x, y, withCompliment = true) {
+      const palettes = ['#f43f5e', '#ec4899', '#a855f7', '#eab308', '#3b82f6', '#fb7185'];
+      return {
+        x,
+        y,
+        color: palettes[Math.floor(Math.random() * palettes.length)],
+        scale: withCompliment ? 0.05 : 1,
+        targetScale: 0.85 + Math.random() * 0.4,
+        swayOffset: Math.random() * Math.PI * 2,
+        compliment: withCompliment
+          ? FLOWER_COMPLIMENTS[Math.floor(Math.random() * FLOWER_COMPLIMENTS.length)]
+          : null,
+        complimentAlpha: withCompliment ? 1.0 : 0
+      };
+    }
+
+    /********************************************************************
+     * 6. ANIMAL AI, INTERACTIONS & ACTIONS
+     ********************************************************************/
+    function petAnimal(animal) {
+      animal.happyTimer = 110;
+      animal.bounce = 12;
+      addLovePoints(5);
+
+      for (let i = 0; i < 8; i++) {
+        spawnHeartParticle(animal.x + (Math.random() - 0.5) * 30, animal.y - 25);
+      }
+
+      if (animal.species === 'cat') SoundFX.playMeow();
+      else if (animal.species === 'dog') SoundFX.playBark();
+      else SoundFX.playChime();
+
+      const quote =
+        animal.name === 'Zeus' && Math.random() < 0.45
+          ? "Prrr ♥ ¡Zeus te quiere muchísimo!"
+          : SWEET_QUOTES[Math.floor(Math.random() * SWEET_QUOTES.length)];
+
+      spawnSpeechBubble(animal.x, animal.y - 48, quote);
+    }
+
+    function spotlightAnimal(name) {
+      SoundFX.init();
+      const animal = animals.find(a => a.name === name);
+      if (!animal) return;
+      // Bring animal toward center-front if too far
+      animal.targetX = W * (0.32 + Math.random() * 0.35);
+      animal.targetY = horizonY + (H - horizonY) * (0.45 + Math.random() * 0.2);
+      animal.state = 'walk';
+      petAnimal(animal);
+      showToast(`💖 ¡${animal.name} está muy feliz de jugar contigo!`);
+    }
+
+    function callAllAnimals() {
+      SoundFX.init();
+      SoundFX.playHarpGlissando();
+      animals.forEach((a, idx) => {
+        const spread = (idx - (animals.length - 1) / 2) * (W < 640 ? 58 : 85);
+        a.targetX = Math.max(50, Math.min(W - 50, W * 0.48 + spread));
+        a.targetY = horizonY + (H - horizonY) * 0.52 + (idx % 2) * 22;
+        a.state = 'walk';
+        a.happyTimer = 95;
+        spawnHeartParticle(a.x, a.y - 25);
+      });
+      spawnSpeechBubble(W * 0.48, horizonY + (H - horizonY) * 0.38, "¡Todos te queremos celebrar hoy! 🎉💖");
+      showToast("🔔 ¡Todos los animalitos vinieron a saludarte!");
+    }
+
+    function spawnSpeechBubble(x, y, text) {
+      // Keep max 3 bubbles so screen stays clean
+      if (speechBubbles.length >= 3) speechBubbles.shift();
+      speechBubbles.push({
+        x: Math.max(110, Math.min(W - 110, x)),
+        y,
+        text,
+        life: 160,
+        maxLife: 160
+      });
+    }
+
+    function spawnHeartParticle(x, y, big = false) {
+      particles.push({
+        type: 'heart',
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: -1.5 - Math.random() * 2.2,
+        size: big ? 16 + Math.random() * 10 : 10 + Math.random() * 8,
+        color: Math.random() < 0.5 ? '#f43f5e' : '#ec4899',
+        alpha: 1
+      });
+    }
+
+    function spawnNoteParticle(x, y) {
+      particles.push({
+        type: 'note',
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 1.5,
+        vy: -1.2 - Math.random() * 1.2,
+        symbol: Math.random() < 0.5 ? '♪' : '♫',
+        color: '#f59e0b',
+        alpha: 1
+      });
+    }
+
+    function launchFirework(tx, ty) {
+      SoundFX.playFirework();
+      const colors = ['#f43f5e', '#f59e0b', '#38bdf8', '#a855f7', '#4ade80'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      // Burst particles in a heart or circle pattern
+      const count = 28;
+      for (let i = 0; i < count; i++) {
+        const t = (i / count) * Math.PI * 2;
+        // Parametric heart velocity
+        const hx = 16 * Math.pow(Math.sin(t), 3);
+        const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        fireworks.push({
+          x: tx,
+          y: ty,
+          vx: hx * 0.18 + (Math.random() - 0.5) * 0.4,
+          vy: hy * 0.18 + (Math.random() - 0.5) * 0.4,
+          color,
+          alpha: 1,
+          size: 2.5 + Math.random() * 2
+        });
+      }
+      addLovePoints(3);
+    }
+
+    function spawnWishLantern(x, y) {
+      SoundFX.playChime();
+      const wishes = ["✨ Amor", "💖 Salud", "🌸 Felicidad", "🌟 Paz", "🌷 Sonrisas"];
+      lanterns.push({
+        x,
+        y,
+        vy: -0.65 - Math.random() * 0.35,
+        sway: Math.random() * Math.PI * 2,
+        text: wishes[Math.floor(Math.random() * wishes.length)],
+        alpha: 1
+      });
+      addLovePoints(3);
+    }
+
+    /********************************************************************
+     * 7. POINTER (MOUSE & TOUCH) HANDLERS
+     ********************************************************************/
+    let isPointerDown = false;
+    let lastPetTime = 0;
+
+    function handleWorldInteraction(px, py, isDrag = false) {
+      SoundFX.init();
+
+      // Close weather dropdown if open
+      document.getElementById('weatherDropdown').classList.add('hidden');
+
+      // 1. Check if clicking the glowing Letter Altar in the world
+      if (!isDrag && Math.hypot(px - altarPos.x, py - (altarPos.y - 25)) < 44) {
+        openLetterModal();
+        return;
+      }
+
+      // 2. Check if tapping a flying bird
+      if (!isDrag) {
+        for (const b of birds) {
+          if (Math.hypot(px - b.x, py - b.y) < 32) {
+            SoundFX.playChirp();
+            spawnNoteParticle(b.x, b.y - 10);
+            spawnHeartParticle(b.x, b.y - 10);
+            b.vy = -2.2;
+            return;
+          }
+        }
+      }
+
+      // 3. Check if rubbing/tapping an animal
+      for (const a of animals) {
+        if (Math.hypot(px - a.x, py - (a.y - 15)) < 42) {
+          const now = performance.now();
+          if (!isDrag || now - lastPetTime > 260) {
+            petAnimal(a);
+            lastPetTime = now;
+          }
+          return;
+        }
+      }
+
+      if (isDrag && currentTool !== 'pet') return;
+      if (isDrag && currentTool === 'pet') {
+        if (Math.random() < 0.25) spawnHeartParticle(px, py);
+        return;
+      }
+
+      // 4. Execute selected tool action
+      if (currentTool === 'pet') {
+        spawnHeartParticle(px, py);
+        if (isInsidePond(px, py)) {
+          SoundFX.playSplash();
+          ripples.push({ x: px, y: py, r: 4, maxR: 45, alpha: 0.8 });
+        } else {
+          SoundFX.playTone(660, 'sine', 0.25, 0.04);
+        }
+      } else if (currentTool === 'play') {
+        const groundY = Math.max(horizonY + 25, Math.min(H - 100, py));
+        const isYarn = Math.random() < 0.5;
+        toys.push({
+          type: isYarn ? 'yarn' : 'ball',
+          x: px,
+          y: py - 50,
+          vx: (Math.random() - 0.5) * 6,
+          vy: -4,
+          groundY,
+          color: isYarn ? '#ec4899' : '#a3e635',
+          life: 420
+        });
+        SoundFX.playSplash();
+        // Alert closest dog or cat to chase it!
+        animals.forEach(a => {
+          if ((isYarn && a.species === 'cat') || (!isYarn && a.species === 'dog') || Math.random() < 0.5) {
+            a.state = 'chase';
+          }
+        });
+      } else if (currentTool === 'feed') {
+        const inWater = isInsidePond(px, py);
+        const ty = Math.max(horizonY + 20, Math.min(H - 95, py));
+        treats.push({
+          x: px,
+          y: inWater ? py : ty,
+          inWater,
+          color: inWater ? '#fbbf24' : '#f43f5e',
+          life: 500
+        });
+        if (inWater) {
+          SoundFX.playSplash();
+          ripples.push({ x: px, y: py, r: 4, maxR: 50, alpha: 0.9 });
+        } else {
+          SoundFX.playChirp();
+          // Make birds swoop toward food
+          birds.forEach(b => {
+            if (Math.random() < 0.65) {
+              b.targetX = px + (Math.random() - 0.5) * 40;
+              b.targetY = ty;
+              b.state = 'swoop';
+            }
+          });
+        }
+      } else if (currentTool === 'flower') {
+        if (py < horizonY + 10) {
+          launchFirework(px, py);
+        } else if (isInsidePond(px, py)) {
+          SoundFX.playSplash();
+          ripples.push({ x: px, y: py, r: 5, maxR: 55, alpha: 0.9 });
+          spawnHeartParticle(px, py);
+        } else {
+          SoundFX.playHarpGlissando();
+          flowers.push(createFlower(px, Math.min(H - 95, py), true));
+          if (flowers.length > 55) flowers.shift();
+          addLovePoints(4);
+        }
+      } else if (currentTool === 'magic') {
+        if (py < horizonY + 20) {
+          launchFirework(px, py);
+        } else {
+          spawnWishLantern(px, py);
+        }
+      }
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      isPointerDown = true;
+      handleWorldInteraction(e.clientX, e.clientY, false);
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      if (!isPointerDown) return;
+      handleWorldInteraction(e.clientX, e.clientY, true);
+    });
+
+    window.addEventListener('pointerup', () => {
+      isPointerDown = false;
+    });
+
+    window.addEventListener('resize', resizeWorld);
+
+    /********************************************************************
+     * 8. UPDATE & RENDER LOOP
+     ********************************************************************/
+    let frameCount = 0;
+
+    function updateWorld() {
+      frameCount++;
+
+      // Clouds
+      clouds.forEach(c => {
+        c.x += c.speed;
+        if (c.x > W + 120) c.x = -120;
+      });
+
+      // Ambient Sakura Petals or Night Fireflies
+      if (sakuraRain && frameCount % 5 === 0 && particles.length < 90) {
+        particles.push({
+          type: 'petal',
+          x: Math.random() * W,
+          y: -15,
+          vx: 0.6 + Math.random() * 0.8,
+          vy: 1.0 + Math.random() * 1.2,
+          rot: Math.random() * Math.PI * 2,
+          alpha: 0.9
+        });
+      }
+
+      if (timeOfDay === 'night' && frameCount % 8 === 0 && particles.length < 95) {
+        particles.push({
+          type: 'firefly',
+          x: Math.random() * W,
+          y: horizonY + Math.random() * (H - horizonY - 80),
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: (Math.random() - 0.5) * 0.6,
+          alpha: 0.9,
+          life: 160
+        });
+      }
+
+      // Update Toys (Balls & Yarn)
+      for (let i = toys.length - 1; i >= 0; i--) {
+        const t = toys[i];
+        t.x += t.vx;
+        t.y += t.vy;
+        t.vy += 0.32; // gravity
+        if (t.y >= t.groundY) {
+          t.y = t.groundY;
+          t.vy *= -0.58;
+          t.vx *= 0.82;
+        }
+        if (t.x < 30 || t.x > W - 30) t.vx *= -0.8;
+        t.life--;
+        if (t.life <= 0) toys.splice(i, 1);
+      }
+
+      // Update Treats
+      for (let i = treats.length - 1; i >= 0; i--) {
+        treats[i].life--;
+        if (treats[i].life <= 0) treats.splice(i, 1);
+      }
+
+      // Update Land Animals (Cats, Dogs, Bunny)
+      animals.forEach(a => {
+        if (a.happyTimer > 0) a.happyTimer--;
+        if (a.bounce > 0) a.bounce *= 0.85;
+
+        // Check if there is a treat nearby
+        let targetTreat = null;
+        for (const tr of treats) {
+          if (!tr.inWater && Math.hypot(tr.x - a.x, tr.y - a.y) < 220) {
+            targetTreat = tr;
+            break;
+          }
+        }
+
+        // Check if there is a toy nearby
+        let targetToy = toys.length > 0 ? toys[toys.length - 1] : null;
+
+        if (targetTreat) {
+          a.targetX = targetTreat.x;
+          a.targetY = targetTreat.y;
+          a.state = 'chase';
+          if (Math.hypot(a.x - targetTreat.x, a.y - targetTreat.y) < 22) {
+            targetTreat.life = 0;
+            a.happyTimer = 80;
+            a.bounce = 8;
+            spawnHeartParticle(a.x, a.y - 25);
+            addLovePoints(3);
+            if (a.species === 'cat') SoundFX.playMeow();
+            else if (a.species === 'dog') SoundFX.playBark();
+          }
+        } else if (targetToy) {
+          a.targetX = targetToy.x;
+          a.targetY = targetToy.groundY;
+          a.state = 'chase';
+          if (Math.hypot(a.x - targetToy.x, a.y - targetToy.groundY) < 26 && Math.abs(targetToy.vy) < 2) {
+            // Kick/bat the toy playfully!
+            targetToy.vx = (Math.random() - 0.5) * 8;
+            targetToy.vy = -4.5;
+            a.bounce = 10;
+            a.happyTimer = 50;
+            spawnHeartParticle(a.x, a.y - 25);
+          }
+        } else {
+          a.stateTimer--;
+          if (a.stateTimer <= 0) {
+            if (a.state === 'idle') {
+              a.state = 'walk';
+              a.stateTimer = 90 + Math.random() * 120;
+              // Pick a non-pond destination
+              for (let tries = 0; tries < 5; tries++) {
+                const nx = 60 + Math.random() * (W - 120);
+                const ny = horizonY + 35 + Math.random() * (H - horizonY - 140);
+                if (!isInsidePond(nx, ny)) {
+                  a.targetX = nx;
+                  a.targetY = ny;
+                  break;
+                }
+              }
+            } else {
+              a.state = 'idle';
+              a.stateTimer = 80 + Math.random() * 130;
+            }
+          }
+        }
+
+        if (a.state === 'walk' || a.state === 'chase') {
+          const dx = a.targetX - a.x;
+          const dy = a.targetY - a.y;
+          const dist = Math.hypot(dx, dy);
+          const speed = a.state === 'chase' ? 3.2 : 1.15;
+          if (dist > 6) {
+            a.x += (dx / dist) * speed;
+            a.y += (dy / dist) * speed;
+            if (Math.abs(dx) > 1) a.facing = dx > 0 ? 1 : -1;
+          } else if (a.state === 'walk') {
+            a.state = 'idle';
+          }
+        }
+      });
+
+      // Update Birds
+      birds.forEach(b => {
+        b.wingPhase += 0.28;
+        if (b.state === 'swoop') {
+          const dx = b.targetX - b.x;
+          const dy = b.targetY - b.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 10) {
+            b.x += (dx / dist) * 3.2;
+            b.y += (dy / dist) * 3.2;
+          } else {
+            b.state = 'fly';
+            b.vy = -1.8;
+            spawnNoteParticle(b.x, b.y);
+          }
+        } else {
+          b.x += b.vx;
+          b.y += b.vy;
+          if (b.x < 30 || b.x > W - 30) b.vx *= -1;
+          if (b.y < 40 || b.y > horizonY - 20) b.vy *= -1;
+          if (Math.random() < 0.01) spawnNoteParticle(b.x, b.y);
+        }
+      });
+
+      // Update Butterflies
+      butterflies.forEach(bf => {
+        bf.angle += (Math.random() - 0.5) * 0.25;
+        bf.x += Math.cos(bf.angle) * 1.1;
+        bf.y += Math.sin(bf.angle) * 0.8;
+        if (bf.x < 20) bf.x = W - 20;
+        if (bf.x > W - 20) bf.x = 20;
+        if (bf.y < horizonY) bf.y = horizonY + 20;
+        if (bf.y > H - 100) bf.y = H - 120;
+      });
+
+      // Update Pond Creatures
+      pondCreatures.forEach(pc => {
+        pc.angle += pc.speed;
+      });
+
+      // Update Flowers bloom & compliments
+      flowers.forEach(f => {
+        if (f.scale < f.targetScale) {
+          f.scale += (f.targetScale - f.scale) * 0.12;
+        }
+        if (f.complimentAlpha > 0) {
+          f.complimentAlpha -= 0.0035;
+        }
+      });
+
+      // Update Ripples
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.r += 0.9;
+        r.alpha -= 0.018;
+        if (r.alpha <= 0) ripples.splice(i, 1);
+      }
+
+      // Update Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.type === 'petal') {
+          p.rot += 0.03;
+          p.x += Math.sin(frameCount * 0.03 + i) * 0.4;
+          if (p.y > H) particles.splice(i, 1);
+        } else if (p.type === 'firefly') {
+          p.life--;
+          if (p.life <= 0) particles.splice(i, 1);
+        } else {
+          p.alpha -= 0.016;
+          if (p.alpha <= 0) particles.splice(i, 1);
+        }
+      }
+
+      // Update Fireworks
+      for (let i = fireworks.length - 1; i >= 0; i--) {
+        const fw = fireworks[i];
+        fw.x += fw.vx;
+        fw.y += fw.vy;
+        fw.vy += 0.04;
+        fw.vx *= 0.98;
+        fw.vy *= 0.98;
+        fw.alpha -= 0.016;
+        if (fw.alpha <= 0) fireworks.splice(i, 1);
+      }
+
+      // Update Wish Lanterns
+      for (let i = lanterns.length - 1; i >= 0; i--) {
+        const l = lanterns[i];
+        l.y += l.vy;
+        l.x += Math.sin(frameCount * 0.03 + l.sway) * 0.4;
+        if (l.y < -50) lanterns.splice(i, 1);
+      }
+
+      // Update Speech Bubbles
+      for (let i = speechBubbles.length - 1; i >= 0; i--) {
+        speechBubbles[i].life--;
+        if (speechBubbles[i].life <= 0) speechBubbles.splice(i, 1);
+      }
+    }
+
+    /********************************************************************
+     * 9. DRAWING FUNCTIONS
+     ********************************************************************/
+    function drawSkyAndScenery() {
+      // Sky Gradient
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, horizonY + 40);
+      if (timeOfDay === 'day') {
+        skyGrad.addColorStop(0, '#38bdf8');
+        skyGrad.addColorStop(0.55, '#bae6fd');
+        skyGrad.addColorStop(1, '#fef3c7');
+      } else if (timeOfDay === 'sunset') {
+        skyGrad.addColorStop(0, '#4c1d95');
+        skyGrad.addColorStop(0.45, '#db2777');
+        skyGrad.addColorStop(0.8, '#fb923c');
+        skyGrad.addColorStop(1, '#fde047');
+      } else {
+        skyGrad.addColorStop(0, '#090d16');
+        skyGrad.addColorStop(0.5, '#1e1b4b');
+        skyGrad.addColorStop(1, '#311042');
+      }
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, W, horizonY + 40);
+
+      // Stars & Aurora at night
+      if (timeOfDay === 'night') {
+        stars.forEach(s => {
+          const twinkle = 0.35 + 0.65 * Math.sin(frameCount * 0.05 + s.phase);
+          ctx.fillStyle = `rgba(255, 255, 255, ${twinkle})`;
+          ctx.beginPath();
+          ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Sun or Moon
+      const celestialX = W * 0.78;
+      const celestialY = timeOfDay === 'sunset' ? horizonY - 25 : H * 0.16;
+      ctx.save();
+      if (timeOfDay === 'night') {
+        ctx.fillStyle = '#fef9c3';
+        ctx.shadowColor = '#fef08a';
+        ctx.shadowBlur = 30;
+        ctx.beginPath();
+        ctx.arc(celestialX, celestialY, 30, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        const sunColor = timeOfDay === 'sunset' ? '#fb7185' : '#fde047';
+        ctx.fillStyle = sunColor;
+        ctx.shadowColor = sunColor;
+        ctx.shadowBlur = 45;
+        ctx.beginPath();
+        ctx.arc(celestialX, celestialY, 36, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Optional Rainbow
+      if (showRainbow) {
+        const rainbowColors = [
+          'rgba(244, 63, 94, 0.24)',
+          'rgba(251, 146, 60, 0.24)',
+          'rgba(250, 204, 21, 0.24)',
+          'rgba(74, 222, 128, 0.24)',
+          'rgba(56, 189, 248, 0.24)',
+          'rgba(168, 85, 247, 0.24)'
+        ];
+        ctx.save();
+        ctx.lineWidth = 9;
+        const rRadius = Math.max(W, H) * 0.48;
+        rainbowColors.forEach((col, idx) => {
+          ctx.strokeStyle = col;
+          ctx.beginPath();
+          ctx.arc(W * 0.5, horizonY + 80, rRadius - idx * 9, Math.PI * 1.08, Math.PI * 1.92);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+
+      // Clouds
+      clouds.forEach(c => {
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.scale(c.scale, c.scale);
+        ctx.fillStyle =
+          timeOfDay === 'night'
+            ? 'rgba(148, 163, 184, 0.22)'
+            : timeOfDay === 'sunset'
+            ? 'rgba(254, 205, 211, 0.72)'
+            : 'rgba(255, 255, 255, 0.82)';
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.arc(25, -6, 22, 0, Math.PI * 2);
+        ctx.arc(-24, -4, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Back Rolling Hills
+      ctx.fillStyle =
+        timeOfDay === 'night' ? '#14332b' : timeOfDay === 'sunset' ? '#4d7c5d' : '#86efac';
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY + 20);
+      ctx.quadraticCurveTo(W * 0.28, horizonY - 45, W * 0.58, horizonY + 15);
+      ctx.quadraticCurveTo(W * 0.82, horizonY + 50, W, horizonY - 15);
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+      ctx.fill();
+
+      // Main Lush Meadow Gradient
+      const meadowGrad = ctx.createLinearGradient(0, horizonY, 0, H);
+      if (timeOfDay === 'night') {
+        meadowGrad.addColorStop(0, '#114232');
+        meadowGrad.addColorStop(1, '#09261e');
+      } else if (timeOfDay === 'sunset') {
+        meadowGrad.addColorStop(0, '#4ade80');
+        meadowGrad.addColorStop(1, '#15803d');
+      } else {
+        meadowGrad.addColorStop(0, '#6ee7b7');
+        meadowGrad.addColorStop(0.4, '#4ade80');
+        meadowGrad.addColorStop(1, '#22c55e');
+      }
+      ctx.fillStyle = meadowGrad;
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY + 12);
+      ctx.quadraticCurveTo(W * 0.45, horizonY + 42, W, horizonY + 8);
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawCrystalPond() {
+      ctx.save();
+      ctx.translate(pondCenter.x, pondCenter.y);
+
+      // Outer stone/sand bank
+      ctx.fillStyle = timeOfDay === 'night' ? '#334155' : '#fde68a';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, pondCenter.rx + 8, pondCenter.ry + 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Water surface
+      const waterGrad = ctx.createRadialGradient(0, -10, 10, 0, 0, pondCenter.rx);
+      if (timeOfDay === 'night') {
+        waterGrad.addColorStop(0, '#0284c7');
+        waterGrad.addColorStop(1, '#1e3a8a');
+      } else if (timeOfDay === 'sunset') {
+        waterGrad.addColorStop(0, '#f472b6');
+        waterGrad.addColorStop(0.5, '#38bdf8');
+        waterGrad.addColorStop(1, '#0284c7');
+      } else {
+        waterGrad.addColorStop(0, '#7dd3fc');
+        waterGrad.addColorStop(1, '#0ea5e9');
+      }
+      ctx.fillStyle = waterGrad;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, pondCenter.rx, pondCenter.ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      // Draw Ripples
+      ripples.forEach(r => {
+        ctx.strokeStyle = `rgba(255, 255, 255, ${r.alpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(r.x, r.y, r.r, r.r * 0.45, 0, 0, Math.PI * 2);
+        ctx.stroke();
+      });
+
+      // Draw Pond Creatures (Koi & Ducks)
+      pondCreatures.forEach(pc => {
+        const cx = pondCenter.x + Math.cos(pc.angle) * pondCenter.rx * pc.dist;
+        const cy = pondCenter.y + Math.sin(pc.angle) * pondCenter.ry * pc.dist;
+        const dir = -Math.sin(pc.angle) * pc.speed >= 0 ? 1 : -1;
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(dir, 1);
+
+        if (pc.type === 'koi') {
+          ctx.fillStyle = pc.color;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 9, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(-8, 0);
+          ctx.lineTo(-14, -4);
+          ctx.lineTo(-14, 4);
+          ctx.closePath();
+          ctx.fill();
+        } else {
+          // Cute Duck
+          ctx.fillStyle = pc.color;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 12, 8, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(8, -7, 6.5, 0, Math.PI * 2);
+          ctx.fill();
+          // Beak
+          ctx.fillStyle = '#f97316';
+          ctx.beginPath();
+          ctx.ellipse(15, -6, 4, 2, 0, 0, Math.PI * 2);
+          ctx.fill();
+          // Eye
+          ctx.fillStyle = '#1e293b';
+          ctx.beginPath();
+          ctx.arc(9.5, -8, 1.3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+    }
+
+    function drawSakuraTrees() {
+      trees.forEach(t => {
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        ctx.scale(t.scale * t.flip, t.scale);
+
+        // Trunk
+        ctx.fillStyle = '#5c4033';
+        ctx.beginPath();
+        ctx.moveTo(-14, 0);
+        ctx.quadraticCurveTo(-8, -55, -24, -100);
+        ctx.lineTo(-12, -102);
+        ctx.quadraticCurveTo(0, -65, 18, -95);
+        ctx.lineTo(26, -90);
+        ctx.quadraticCurveTo(8, -50, 14, 0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Blossom Canopy Puffs
+        const puffs = [
+          { x: -35, y: -105, r: 38, c: '#fbcfe8' },
+          { x: 25, y: -100, r: 36, c: '#f9a8d4' },
+          { x: -5, y: -128, r: 44, c: '#f472b6' },
+          { x: -48, y: -82, r: 28, c: '#f9a8d4' },
+          { x: 42, y: -80, r: 28, c: '#fbcfe8' }
+        ];
+        const sway = Math.sin(frameCount * 0.025) * 3;
+        puffs.forEach(p => {
+          ctx.fillStyle = p.c;
+          ctx.beginPath();
+          ctx.arc(p.x + sway, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+
+        ctx.restore();
+      });
+    }
+
+    function drawLetterAltar() {
+      const floatY = Math.sin(frameCount * 0.05) * 4;
+      ctx.save();
+      ctx.translate(altarPos.x, altarPos.y);
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.16)';
+      ctx.beginPath();
+      ctx.ellipse(0, 4, 28, 9, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pedestal
+      ctx.fillStyle = '#fff1f2';
+      ctx.strokeStyle = '#fda4af';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(-16, -24, 32, 26, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      // Glowing Aura + Floating Envelope
+      ctx.translate(0, -40 + floatY);
+      ctx.fillStyle = 'rgba(244, 63, 94, 0.22)';
+      ctx.beginPath();
+      ctx.arc(0, 0, 24 + Math.sin(frameCount * 0.08) * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Envelope
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#f43f5e';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(-16, -11, 32, 22, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      // Envelope flap
+      ctx.beginPath();
+      ctx.moveTo(-15, -10);
+      ctx.lineTo(0, 3);
+      ctx.lineTo(15, -10);
+      ctx.stroke();
+
+      // Wax Heart Seal
+      ctx.fillStyle = '#e11d48';
+      ctx.beginPath();
+      ctx.arc(0, 2, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Floating Label
+      ctx.font = 'bold 11px Quicksand, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#881337';
+      ctx.fillText('💌 Carta Para Ti', 0, -20);
+
+      ctx.restore();
+    }
+
+    function drawFlowers() {
+      flowers.forEach(f => {
+        const sway = Math.sin(frameCount * 0.04 + f.swayOffset) * 3;
+        ctx.save();
+        ctx.translate(f.x, f.y);
+        ctx.scale(f.scale, f.scale);
+
+        // Stem
+        ctx.strokeStyle = '#15803d';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(sway * 0.5, -10, sway, -20);
+        ctx.stroke();
+
+        // Petals
+        ctx.translate(sway, -20);
+        ctx.fillStyle = f.color;
+        for (let i = 0; i < 5; i++) {
+          const ang = (i * Math.PI * 2) / 5;
+          ctx.beginPath();
+          ctx.arc(Math.cos(ang) * 5.5, Math.sin(ang) * 5.5, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // Center
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(0, 0, 3.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+
+        // Floating compliment ribbon if newly planted
+        if (f.compliment && f.complimentAlpha > 0.02) {
+          ctx.save();
+          ctx.globalAlpha = f.complimentAlpha;
+          ctx.font = 'bold 12px Quicksand, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = '#fff';
+          ctx.strokeStyle = '#be185d';
+          ctx.lineWidth = 3;
+          const ry = f.y - 34 - (1 - f.complimentAlpha) * 28;
+          ctx.strokeText(f.compliment, f.x, ry);
+          ctx.fillText(f.compliment, f.x, ry);
+          ctx.restore();
+        }
+      });
+    }
+
+    function drawSingleAnimal(a) {
+      const walkBob = a.state !== 'idle' ? Math.abs(Math.sin(frameCount * 0.22)) * 5 : 0;
+      const yOffset = -walkBob - a.bounce;
+
+      ctx.save();
+      ctx.translate(a.x, a.y);
+
+      // Ground Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.18)';
+      ctx.beginPath();
+      ctx.ellipse(0, 3, 20, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(0, yOffset);
+      ctx.scale(a.facing, 1);
+
+      // Tail
+      const tailWag = Math.sin(frameCount * (a.happyTimer > 0 ? 0.45 : 0.14)) * 8;
+      ctx.strokeStyle = a.color;
+      ctx.lineWidth = a.species === 'bunny' ? 6 : 5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      if (a.species === 'bunny') {
+        ctx.fillStyle = '#ffffff';
+        ctx.arc(-16, -8, 6, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.moveTo(-14, -10);
+        ctx.quadraticCurveTo(-26, -22 + tailWag, -22, -30 + tailWag);
+        ctx.stroke();
+      }
+
+      // Body
+      ctx.fillStyle = a.color;
+      ctx.beginPath();
+      ctx.ellipse(0, -12, 18, 13, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Belly Patch
+      ctx.fillStyle = a.belly;
+      ctx.beginPath();
+      ctx.ellipse(3, -10, 11, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Paws
+      ctx.fillStyle = a.coat === 'tuxedo' ? '#ffffff' : a.color;
+      const pawSwing = a.state !== 'idle' ? Math.sin(frameCount * 0.25) * 4 : 0;
+      ctx.beginPath();
+      ctx.arc(-9 + pawSwing, -1, 4.5, 0, Math.PI * 2);
+      ctx.arc(10 - pawSwing, -1, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head
+      ctx.fillStyle = a.color;
+      ctx.beginPath();
+      ctx.arc(12, -24, 13, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Ears
+      if (a.species === 'cat') {
+        ctx.beginPath();
+        ctx.moveTo(4, -33);
+        ctx.lineTo(8, -45);
+        ctx.lineTo(14, -35);
+        ctx.moveTo(14, -35);
+        ctx.lineTo(20, -45);
+        ctx.lineTo(23, -32);
+        ctx.fill();
+      } else if (a.species === 'dog') {
+        // Floppy cute ears
+        ctx.fillStyle = '#78350f';
+        ctx.beginPath();
+        ctx.ellipse(4, -24, 5, 10, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (a.species === 'bunny') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.ellipse(9, -42, 4, 11, -0.15, 0, Math.PI * 2);
+        ctx.ellipse(16, -42, 4, 11, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Eyes (Happy arcs when petted!)
+      ctx.strokeStyle = '#1e293b';
+      ctx.fillStyle = '#1e293b';
+      ctx.lineWidth = 2;
+      if (a.happyTimer > 0) {
+        ctx.beginPath();
+        ctx.arc(16, -26, 3.5, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+      } else {
+        ctx.beginPath();
+        ctx.arc(16, -26, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        // Eye shine
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(17, -27, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Pink Nose & Blush
+      ctx.fillStyle = '#fb7185';
+      ctx.beginPath();
+      ctx.arc(23, -23, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(244, 63, 94, 0.35)';
+      ctx.beginPath();
+      ctx.arc(14, -21, 3.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+
+      // Name Badge
+      ctx.font = 'bold 11px Quicksand, sans-serif';
+      ctx.textAlign = 'center';
+      const label = a.happyTimer > 0 ? `💖 ${a.name}` : a.name;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(-26, 8, 52, 16, 8);
+      ctx.fill();
+      ctx.fillStyle = '#334155';
+      ctx.fillText(label, 0, 19);
+
+      ctx.restore();
+    }
+
+    function drawBirdsAndButterflies() {
+      // Birds
+      birds.forEach(b => {
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.scale(b.vx >= 0 ? 1 : -1, 1);
+
+        const wingY = Math.sin(b.wingPhase) * 7;
+        ctx.fillStyle = b.color;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 9, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wing
+        ctx.beginPath();
+        ctx.moveTo(-2, 0);
+        ctx.lineTo(-6, -8 + wingY);
+        ctx.lineTo(4, -2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Beak
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.moveTo(8, -2);
+        ctx.lineTo(13, 0);
+        ctx.lineTo(8, 2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      });
+
+      // Butterflies
+      butterflies.forEach(bf => {
+        const flap = Math.abs(Math.sin(frameCount * 0.25)) * 6;
+        ctx.save();
+        ctx.translate(bf.x, bf.y);
+        ctx.fillStyle = bf.color;
+        ctx.beginPath();
+        ctx.arc(-3, -2, 3 + flap * 0.4, 0, Math.PI * 2);
+        ctx.arc(3, -2, 3 + flap * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    function drawToysAndTreats() {
+      // Treats
+      treats.forEach(tr => {
+        ctx.save();
+        ctx.translate(tr.x, tr.y);
+        ctx.fillStyle = tr.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#4ade80';
+        ctx.fillRect(-1.5, -8, 3, 3.5);
+        ctx.restore();
+      });
+
+      // Toys
+      toys.forEach(t => {
+        ctx.save();
+        ctx.translate(t.x, t.y);
+        ctx.fillStyle = t.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0.5, 2.3);
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    function drawParticlesAndMagic() {
+      // Wish Lanterns
+      lanterns.forEach(l => {
+        ctx.save();
+        ctx.translate(l.x, l.y);
+        ctx.shadowColor = '#fbbf24';
+        ctx.shadowBlur = 20;
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.roundRect(-10, -14, 20, 26, 6);
+        ctx.fill();
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.roundRect(-8, -12, 16, 18, 4);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.font = 'bold 11px Quicksand, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(l.text, 0, 24);
+        ctx.restore();
+      });
+
+      // Fireworks
+      fireworks.forEach(fw => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, fw.alpha);
+        ctx.fillStyle = fw.color;
+        ctx.shadowColor = fw.color;
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.arc(fw.x, fw.y, fw.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Particles (Hearts, Petals, Fireflies, Notes)
+      particles.forEach(p => {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.translate(p.x, p.y);
+
+        if (p.type === 'heart') {
+          ctx.fillStyle = p.color;
+          ctx.font = `${Math.round(p.size)}px sans-serif`;
+          ctx.fillText('💖', -p.size * 0.5, 0);
+        } else if (p.type === 'note') {
+          ctx.fillStyle = p.color;
+          ctx.font = 'bold 16px sans-serif';
+          ctx.fillText(p.symbol, 0, 0);
+        } else if (p.type === 'petal') {
+          ctx.rotate(p.rot);
+          ctx.fillStyle = '#fbcfe8';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, 5, 3, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (p.type === 'firefly') {
+          ctx.fillStyle = '#fde047';
+          ctx.shadowColor = '#fde047';
+          ctx.shadowBlur = 12;
+          ctx.beginPath();
+          ctx.arc(0, 0, 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // Speech Bubbles
+      speechBubbles.forEach(b => {
+        const alpha = Math.min(1, b.life / 30);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.font = 'bold 12px Quicksand, sans-serif';
+        const textWidth = ctx.measureText(b.text).width;
+        const bw = textWidth + 24;
+        const bh = 28;
+        const bx = b.x - bw / 2;
+        const by = b.y - bh;
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, bw, bh, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#be185d';
+        ctx.textAlign = 'center';
+        ctx.fillText(b.text, b.x, by + 18);
+        ctx.restore();
+      });
+    }
+
+    function gameLoop() {
+      updateWorld();
+
+      ctx.clearRect(0, 0, W, H);
+      drawSkyAndScenery();
+      drawCrystalPond();
+      drawSakuraTrees();
+      drawLetterAltar();
+      drawFlowers();
+
+      // Depth-sort animals by Y coordinate
+      const sortedAnimals = [...animals].sort((a, b) => a.y - b.y);
+      sortedAnimals.forEach(drawSingleAnimal);
+
+      drawToysAndTreats();
+      drawBirdsAndButterflies();
+      drawParticlesAndMagic();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    window.onload = function () {
+      loadLetterContent();
+      initWorld();
+      gameLoop();
+    };
+  </script>
+</body>
+</html>
